@@ -7,20 +7,12 @@ import 'ui/screens/settings/settings_screen.dart';
 import 'ui/states/settings_state.dart';
 import 'ui/theme/theme.dart';
 
-///
-/// Launch the application with the given list of providers
-///
 void mainCommon(List<SingleChildWidget> providers) {
   runApp(
     MultiProvider(
-      providers: providers,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MyApp()),
-    ),
-  );
+      providers: providers, 
+      child: const MyApp()));
 }
- 
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -31,15 +23,23 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 1;
+  bool _initialized = false;
 
   final List<Widget> _pages = [LibraryScreen(), FavoriteScreen(), SettingsScreen()];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      context.read<AppSettingsState>().init();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    
-    // 1- Get the globbal settings state
-    AppSettingsState settingsState = context.read<AppSettingsState>();
- 
+    final settingsState = context.watch<AppSettingsState>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appTheme,
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
             });
           },
           selectedItemColor: settingsState.theme.color,
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.library_music),
               label: 'Library',

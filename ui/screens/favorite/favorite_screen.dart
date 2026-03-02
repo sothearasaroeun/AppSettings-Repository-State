@@ -4,31 +4,31 @@ import 'package:provider/provider.dart';
 import '../../../data/repositories/songs/song_repository.dart';
 import '../../../model/songs/song.dart';
 import '../../states/player_state.dart';
+import '../../states/settings_state.dart';
 import '../../theme/theme.dart';
 
 class FavoriteScreen extends StatelessWidget {
   const FavoriteScreen({super.key});
 
- 
   @override
   Widget build(BuildContext context) {
-    // 1- Read the globbal song repository
+    // Watch the globbal settings state for theme changes
+    AppSettingsState settingsState = context.watch<AppSettingsState>();
+
+    // 1- Read the global song repository
     SongRepository songRepository = context.read<SongRepository>();
     List<Song> songs = songRepository.fetchSongs();
- 
-    // 3 - Watch the globbal player state
+
+    // 3 - Watch the global player state
     PlayerState playerState = context.read<PlayerState>();
 
     return Container(
-      
+      color: settingsState.theme.backgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 16),
-          Text(
-            "Favorite",
-            style: AppTextStyles.heading,
-          ),
+          Text("Favorite", style: AppTextStyles.heading),
 
           SizedBox(height: 50),
 
@@ -48,15 +48,10 @@ class FavoriteScreen extends StatelessWidget {
 }
 
 class SongTile extends StatelessWidget {
-  const SongTile({
-    super.key,
-    required this.song,
-    required this.isPlaying,
-  });
+  const SongTile({super.key, required this.song, required this.isPlaying});
 
   final Song song;
   final bool isPlaying;
-
 
   @override
   Widget build(BuildContext context) {
